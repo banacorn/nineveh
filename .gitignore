@@ -1,14 +1,10 @@
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
+dist
+cabal-dev
+*.o
+*.hi
+*.chi
+*.chs.h
+.virthualenv
 
-pids
-logs
-results
-
-npm-debug.log
+test/stylus/*
+test/css/*
