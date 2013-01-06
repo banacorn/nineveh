@@ -1,0 +1,22 @@
+{
+  "name": "less2stylus",
+  "version": "0.0.0",
+  "description": "less -> stylus transpiler",
+  "main": "index.js",
+  "directories": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/banacorn/less2stylus.git"
+  },
+  "author": "Ting-Yen LAI",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "00e7b48880a24f1560ee86ba6208d6c966caedbb",
+  "dependencies": {
+    "commander": "~1.1.1",
+    "mkdirp": "~0.3.4",
+    "async": "~0.1.22"
+  }
+}
