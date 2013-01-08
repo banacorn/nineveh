@@ -6,5 +6,7 @@ cabal-dev
 *.chs.h
 .virthualenv
 
+less.less
+stylus.styl
 test/stylus/*
 test/css/*
