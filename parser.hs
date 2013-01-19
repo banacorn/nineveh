@@ -1,4 +1,5 @@
 module Parser (
+    parse,
     lexeme,
     integer,
     float,
