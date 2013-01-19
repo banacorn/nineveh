@@ -13,6 +13,7 @@ import Value.Length
 import Value.Position
 import Value.Ratio
 import Value.Frequency
+import Value.Resolution
 
 
 
