@@ -1,6 +1,7 @@
 module Parser (
     parse,
     lexeme,
+    natural,
     integer,
     float,
     naturalOrFloat,
@@ -34,6 +35,7 @@ commaSep1       = TP.commaSep1 lexer
 comma           = TP.comma lexer
 semi            = TP.semi lexer
 identifier      = TP.identifier lexer
+natural         = TP.natural lexer
 symbol          = TP.symbol lexer
 
 
