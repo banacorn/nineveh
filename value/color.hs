@@ -1,3 +1,5 @@
+-- Refernce from MDN https://developer.mozilla.org/en-US/docs/CSS/color
+
 module Value.Color (
     Color(..),
     color
