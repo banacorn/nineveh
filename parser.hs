@@ -8,16 +8,14 @@ module Parser (
     commaSep1,
     comma,
     semi,
-    identifier
+    identifier,
+    symbol
     ) where
 
 
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language (emptyDef)
 import qualified Text.ParserCombinators.Parsec.Token as TP
-
-
-
 
 
 -- lexer
@@ -35,3 +33,9 @@ commaSep1       = TP.commaSep1 lexer
 comma           = TP.comma lexer
 semi            = TP.semi lexer
 identifier      = TP.identifier lexer
+symbol          = TP.symbol lexer
+
+
+
+
+

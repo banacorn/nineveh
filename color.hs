@@ -31,10 +31,14 @@ percentage = lexeme $ do
 
 integerString = show <$> integer
 
-hex = lexeme $ do
-    char '#'
-    h <- count 3 hexDigit
-    return $ Hex ('#':h)
+hex = lexeme $ try $ do
+        char '#'
+        h <- count 6 hexDigit
+        return $ Hex ('#':h)
+    <|> do
+        char '#'
+        h <- count 3 hexDigit
+        return $ Hex ('#':h)
 
 rgb = lexeme $ do
     try $ do
