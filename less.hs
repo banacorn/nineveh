@@ -6,6 +6,7 @@ import Data.List
 import Text.ParserCombinators.Parsec
 import Parser
 import Value.Color
+import Value.Integer
 
 
 
