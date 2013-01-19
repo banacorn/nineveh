@@ -9,6 +9,7 @@ import Parser
 import Text.ParserCombinators.Parsec
 
 import Value.Integer
+import Value.Percentage
 
 import Control.Applicative ((<$>), (<*>), (<**>))
 
@@ -40,12 +41,6 @@ instance Show Color where
     show (ColorKeyword color)   = color
     show (ColorVariable variable) = "@" ++ show variable
 
--- numbers
-percentage = lexeme $ do
-    n <- many1 digit
-    char '%'
-    return (n ++ "%")
-
 integerString = show <$> integer'
 
 hex = lexeme $ try $ do
@@ -61,7 +56,7 @@ rgb = lexeme $ do
     try $ do
         string "rgb"
         [r, g, b] <- parens (commaSep1 percentage)
-        return $ RGB (r, g, b)
+        return $ RGB (show r, show g, show b)
 
     <|> do
         string "rgb"
@@ -76,7 +71,7 @@ hsl = lexeme $ do
         s <- percentage
         comma
         l <- percentage
-        return $ HSL (h, s, l)
+        return $ HSL (h, show s, show l)
 
 rgba = lexeme $ do
     try $ do
@@ -90,8 +85,8 @@ rgba = lexeme $ do
             comma 
             a <- naturalOrFloat
             case a of
-                Left i -> return $ RGBA (r, g, b, show i)
-                Right f -> return $ RGBA (r, g, b, show f)
+                Left i -> return $ RGBA (show r, show g, show b, show i)
+                Right f -> return $ RGBA (show r, show g, show b, show f)
     <|> do
         string "rgba"
         parens $ do
@@ -117,8 +112,8 @@ hsla = lexeme $ do
         comma
         a <- naturalOrFloat
         case a of
-            Left i -> return $ HSLA (h, s, l, show i)
-            Right f -> return $ HSLA (h, s, l, show f)
+            Left i -> return $ HSLA (h, show s, show l, show i)
+            Right f -> return $ HSLA (h, show s, show l, show f)
 
 --variable :: Parser Variable
 variable = do 

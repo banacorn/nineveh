@@ -13,12 +13,12 @@ data Number = Number Double
 instance Show Number where
     show (Number n) = show n
 
-number = lexeme $ do 
+number = lexeme $ try (do 
+        f <- float
+        return (Number f))
+    <|> do 
         i <- integer
         return (Number $ fromIntegral i) 
-    <|> do 
-        f <- float
-        return (Number f)
     <|> do 
         char '.'
         i <- integer
