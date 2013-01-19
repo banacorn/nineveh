@@ -8,6 +8,8 @@ module Value.Color (
 import Parser
 import Text.ParserCombinators.Parsec
 
+import Value.Integer
+
 import Control.Applicative ((<$>), (<*>), (<**>))
 
 -- datatypes
@@ -44,7 +46,7 @@ percentage = lexeme $ do
     char '%'
     return (n ++ "%")
 
-integerString = show <$> integer
+integerString = show <$> integer'
 
 hex = lexeme $ try $ do
         char '#'
