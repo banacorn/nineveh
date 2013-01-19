@@ -15,6 +15,7 @@ import Value.Ratio
 import Value.Frequency
 import Value.Resolution
 import Value.Shape
+import Value.Angle
 
 
 
