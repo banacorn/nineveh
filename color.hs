@@ -20,8 +20,21 @@ data Color  = RGB (String, String, String)
             | CurrentColor
             | ColorKeyword String
             | ColorVariable Variable
-            deriving (Eq, Show)
+            deriving (Eq)
 
+
+-- instances
+
+instance Show Color where
+    show (RGB (r, g, b))        = "rgb(" ++ r ++ ", " ++ g ++ ", " ++ b ++ ")"
+    show (RGBA (r, g, b, a))    = "rgba(" ++ r ++ ", " ++ g ++ ", " ++ b ++ ", " ++ a ++ ")"
+    show (HSL (h, s, l))        = "hsl(" ++ h ++ ", " ++ s ++ ", " ++ l ++ ")"
+    show (HSLA (h, s, l, a))    = "hsl(" ++ h ++ ", " ++ s ++ ", " ++ l ++ ", " ++ a ++ ")"
+    show (Hex s)                = "#" ++ s
+    show Transparent            = "transparent"
+    show CurrentColor           = "currentColor"
+    show (ColorKeyword color)   = color
+    show (ColorVariable variable) = "@" ++ show variable
 
 -- numbers
 percentage = lexeme $ do
