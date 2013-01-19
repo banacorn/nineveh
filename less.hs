@@ -14,6 +14,7 @@ import Value.Position
 import Value.Ratio
 import Value.Frequency
 import Value.Resolution
+import Value.Shape
 
 
 
