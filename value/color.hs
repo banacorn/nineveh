@@ -1,4 +1,4 @@
-module Color (
+module Value.Color (
     Color(..),
     color
     ) where
