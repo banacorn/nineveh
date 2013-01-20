@@ -19,6 +19,7 @@ import Value.Angle
 import Value.String
 import Value.Url
 import Value.Time
+import Value.TimingFunction
 
 
 
