@@ -38,7 +38,7 @@ run p less = case (parse p "" less) of
 property = fmap (intercalate "-" . concat) <$> lexeme $ many1 identifier `sepBy` symbol "-"
 
 selector = property
-value = color
+value =     color
 
 declaration = lexeme $
     do
@@ -59,3 +59,5 @@ block = lexeme $ do
     ds <- declarations
     symbol "}"
     return (s, ds)
+
+blocks = lexeme $ many block
