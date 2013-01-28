@@ -11,7 +11,9 @@ module Parser (
     comma,
     semi,
     identifier,
-    symbol
+    symbol,
+
+    run
     ) where
 
 
@@ -40,6 +42,15 @@ symbol          = TP.symbol lexer
 
 
 
+
+
+
+run p less = case (parse p "" less) of
+    Left err -> do
+        print err
+        error "parse error"
+    Right x -> do
+        return x
 
 
 

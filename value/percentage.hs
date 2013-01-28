@@ -1,22 +1,17 @@
 -- Refernce from MDN https://developer.mozilla.org/en-US/docs/CSS/percentage
 
 module Value.Percentage (
-    Percentage(..),
-    percentage
+    parsePercentage
     ) where
 
+import Value.Type
 import Value.Number
 
 import Parser
 import Text.ParserCombinators.Parsec
 
-data Percentage = Percentage Number
 
-
-instance Show Percentage where
-    show (Percentage n) = show n ++ "%"
-
-percentage = lexeme $ do
-    n <- number
+parsePercentage = lexeme $ do
+    Number n <- parseNumber
     char '%'
     return (Percentage n)

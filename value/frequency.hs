@@ -1,27 +1,21 @@
 -- Refernce from MDN https://developer.mozilla.org/en-US/docs/CSS/frequency
 
 module Value.Frequency (
-    Frequency(..),
-    frequency
+    parseFrequency
     ) where
 
 import Parser
 import Text.ParserCombinators.Parsec
 
+import Value.Type
 import Value.Number
 
-data Frequency  = Hz Number
-                | KHz Number
-
-instance Show Frequency where
-    show (Hz n) = show n ++ "Hz"
-    show (KHz n) = show n ++ "KHz"
 
 
 unit =  (string "Hz" >> return Hz)
     <|> (string "KHz" >> return KHz)
 
-frequency = lexeme $ do
-    n <- number
+parseFrequency = lexeme $ do
+    Number n <- parseNumber
     ctor <- unit
     return (ctor n)

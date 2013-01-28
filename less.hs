@@ -11,20 +11,9 @@ import Value.Value
 
 
 
-
-
-run p less = case (parse p "" less) of
-    Left err -> do
-        print err
-        error "parse error"
-    Right x -> do
-        return x
-
-
 property = fmap (intercalate "-" . concat) <$> lexeme $ many1 identifier `sepBy` symbol "-"
 
 selector = property
-value =     color
 
 declaration = lexeme $
     do
@@ -35,7 +24,7 @@ declaration = lexeme $
     <|> 
     do 
         spaces
-        return ("", ColorKeyword "")
+        return ("", None)
 
 declarations = declaration `sepBy` symbol ";"
 

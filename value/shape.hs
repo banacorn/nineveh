@@ -1,22 +1,16 @@
 -- Refernce from MDN https://developer.mozilla.org/en-US/docs/CSS/shape
 
 module Value.Shape (
-    Shape(..),
-    shape
+    parseShape
     ) where
 
 import Parser
 import Text.ParserCombinators.Parsec
 
+import Value.Type
 import Value.Length
 
-data Shape = Shape (Length, Length, Length, Length)
-
-instance Show Shape where
-    show (Shape (top, right, bottom, left)) = 
-        "rect(" ++ show top ++ ", " ++ show right ++ ", " ++ show bottom ++ ", " ++ show left ++ ")"
-
-shape = lexeme $ do
+parseShape = lexeme $ do
     string "rect"
-    [top, right, bottom, left] <- parens (length' `sepBy` symbol ",")
+    [top, right, bottom, left] <- parens (parseLength `sepBy` symbol ",")
     return (Shape (top, right, bottom, left))

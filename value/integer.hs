@@ -1,13 +1,14 @@
 -- Refernce from MDN https://developer.mozilla.org/en-US/docs/CSS/integer
 
 module Value.Integer (
-    Integer'(..),
-    integer'
+    parseInteger
     ) where
+
+import Control.Applicative
 
 import Parser
 import Text.ParserCombinators.Parsec
 
-data Integer' = Integer' Integer
+import Value.Type
 
-integer' = integer
+parseInteger = Integer' <$> integer

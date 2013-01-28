@@ -1,19 +1,16 @@
 -- Refernce from MDN https://developer.mozilla.org/en-US/docs/CSS/number
 
 module Value.Number (
-    Number(..),
-    number
+    parseNumber
     ) where
 
 import Parser
 import Text.ParserCombinators.Parsec
 
-data Number = Number Double
+import Value.Type
 
-instance Show Number where
-    show (Number n) = show n
 
-number = lexeme $ try (do 
+parseNumber = lexeme $ try (do 
         f <- float
         return (Number f))
     <|> do 

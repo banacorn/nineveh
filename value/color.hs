@@ -1,132 +1,102 @@
 -- Refernce from MDN https://developer.mozilla.org/en-US/docs/CSS/color
 
 module Value.Color (
-    Color(..),
-    color
+    parseColor
     ) where
 
 import Parser
 import Text.ParserCombinators.Parsec
 
+--import Control.Applicative ((<$>), (<*>), (<**>))
+import Value.Type
+import Value.Instance
 import Value.Integer
+import Value.Number
 import Value.Percentage
 
-import Control.Applicative ((<$>), (<*>), (<**>))
-
--- datatypes
-data Variable = Variable String deriving (Eq, Show)
-
-data Color  = RGB (String, String, String)
-            | RGBA (String, String, String, String)
-            | HSL (String, String, String)
-            | HSLA (String, String, String, String)
-            | Hex String
-            | Transparent
-            | CurrentColor
-            | ColorKeyword String
-            | ColorVariable Variable
-            deriving (Eq)
+parseColor :: Parser Value
+parseColor = lexeme $
+        try transparent
+    <|> try currentColor
+    <|> try rgb
+    <|> try rgba
+    <|> try hsl
+    <|> try hsla
+    <|> colorKeyword
+    <|> hex
 
 
--- instances
+transparent = symbol "transparent" >> return Transparent
+currentColor = symbol "currentColor" >> return CurrentColor
+colorKeyword = do
+    i <- identifier 
+    return (ColorKeyword i)
 
-instance Show Color where
-    show (RGB (r, g, b))        = "rgb(" ++ r ++ ", " ++ g ++ ", " ++ b ++ ")"
-    show (RGBA (r, g, b, a))    = "rgba(" ++ r ++ ", " ++ g ++ ", " ++ b ++ ", " ++ a ++ ")"
-    show (HSL (h, s, l))        = "hsl(" ++ h ++ ", " ++ s ++ ", " ++ l ++ ")"
-    show (HSLA (h, s, l, a))    = "hsl(" ++ h ++ ", " ++ s ++ ", " ++ l ++ ", " ++ a ++ ")"
-    show (Hex s)                = "#" ++ s
-    show Transparent            = "transparent"
-    show CurrentColor           = "currentColor"
-    show (ColorKeyword color)   = color
-    show (ColorVariable variable) = "@" ++ show variable
-
-integerString = show <$> integer'
-
-hex = lexeme $ try $ do
+hex = 
+    try (do
         char '#'
         h <- count 6 hexDigit
-        return $ Hex ('#':h)
-    <|> do
+        return $ Hex ('#':h))
+    <|> (do
         char '#'
         h <- count 3 hexDigit
-        return $ Hex ('#':h)
+        return $ Hex ('#':h))
 
-rgb = lexeme $ do
-    try $ do
+rgb =
+    try (do
         string "rgb"
-        [r, g, b] <- parens (commaSep1 percentage)
-        return $ RGB (show r, show g, show b)
-
-    <|> do
-        string "rgb"
-        [r, g, b] <- parens (commaSep1 integerString)
+        [r, g, b] <- parens (commaSep1 parsePercentage)
         return $ RGB (r, g, b)
+    ) <|> (do
+        string "rgb"
+        [r, g, b] <- parens (commaSep1 parseInteger)
+        return $ RGB (r, g, b)
+    )
 
-hsl = lexeme $ do
-    string "hsl"
-    parens $ do
-        h <- integerString
-        comma
-        s <- percentage
-        comma
-        l <- percentage
-        return $ HSL (h, show s, show l)
-
-rgba = lexeme $ do
-    try $ do
+rgba =
+    try (do
         string "rgba"
         parens $ do
-            r <- percentage
+            r <- parsePercentage
             comma
-            g <- percentage
+            g <- parsePercentage
             comma
-            b <- percentage
-            comma 
-            a <- naturalOrFloat
-            case a of
-                Left i -> return $ RGBA (show r, show g, show b, show i)
-                Right f -> return $ RGBA (show r, show g, show b, show f)
-    <|> do
+            b <- parsePercentage
+            comma
+            a <- parseNumber
+            return (RGBA (r, g, b, a))
+    ) <|> (do
         string "rgba"
         parens $ do
-            r <- integerString
+            r <- parseInteger
             comma
-            g <- integerString
+            g <- parseInteger
             comma
-            b <- integerString
+            b <- parseInteger
             comma 
-            a <- naturalOrFloat
-            case a of
-                Left i -> return $ RGBA (r, g, b, show i)
-                Right f -> return $ RGBA (r, g, b, show f)
+            a <- parseNumber
+            return (RGBA (r, g, b, a))
+    )
 
-hsla = lexeme $ do
+hsl = do
     string "hsl"
     parens $ do
-        h <- integerString
+        h <- parseInteger
         comma
-        s <- percentage
+        s <- parseInteger
         comma
-        l <- percentage
-        comma
-        a <- naturalOrFloat
-        case a of
-            Left i -> return $ HSLA (h, show s, show l, show i)
-            Right f -> return $ HSLA (h, show s, show l, show f)
+        l <- parseInteger
+        return (HSL (h, s, l))
 
---variable :: Parser Variable
-variable = do 
-    char '@'
-    v <- identifier
-    return $ Variable v
 
-color :: Parser Color
-color = lexeme $
-        hex 
-    <|> try rgb 
-    <|> try rgba 
-    <|> try hsl 
-    <|> try hsla    
-    <|> ColorKeyword <$> identifier 
-    <|> ColorVariable <$> variable
+hsla = do
+    string "hsla"
+    parens $ do
+        h <- parseInteger
+        comma
+        s <- parseInteger
+        comma
+        l <- parseInteger
+        comma
+        a <- parseNumber
+        return (HSLA (h, s, l, a))
