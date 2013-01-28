@@ -91,6 +91,9 @@ instance Show Value where
     -- Variable
     show (Variable s) = "@" ++ s
 
+    -- None
+    show None = ""
+
 instance Show TimingFunctionDirection where
     show Start = "start"
     show End = "end"

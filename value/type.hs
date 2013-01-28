@@ -82,4 +82,7 @@ data Value  =
             -- Variable
             | Variable String
 
+            -- None
+            | None
+
 data TimingFunctionDirection = Start | End deriving (Eq)
