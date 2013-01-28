@@ -79,4 +79,7 @@ data Value  =
             | CubicBezier (Double, Double, Double, Double)
             | Steps (Integer, TimingFunctionDirection)
 
+            -- Variable
+            | Variable String
+
 data TimingFunctionDirection = Start | End deriving (Eq)

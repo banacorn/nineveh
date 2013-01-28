@@ -88,6 +88,9 @@ instance Show Value where
     show (CubicBezier (x1, y1, x2, y2)) = "cubic-bezier(" ++ show x1 ++ ", " ++ show y1 ++ ", " ++ show x2 ++ ", " ++ show y2 ++ ")"
     show (Steps (n, direction)) = "steps(" ++ show n ++ ", " ++ show direction ++ ")"
 
+    -- Variable
+    show (Variable s) = "@" ++ s
+
 instance Show TimingFunctionDirection where
     show Start = "start"
     show End = "end"

@@ -23,9 +23,11 @@ import Value.String
 import Value.Url
 import Value.Time
 import Value.TimingFunction
+import Value.Variable
 
 parseValue  =       
-                try parseShape
+                    parseVariable
+            <|> try parseShape
             <|> try parseUrl
             <|> try parseTimingFunction
             <|>     parseString
