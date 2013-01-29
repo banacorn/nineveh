@@ -6,6 +6,7 @@ import Control.Applicative ((<$>))
 import Data.List (intercalate)
 import Text.ParserCombinators.Parsec
 import Parser
+import Tokenization
 
 
 data Selector   = SelectorSequence
@@ -25,7 +26,7 @@ data OtherSelector  = IDSelector String
                     | NegationSelector String
                     deriving (Eq, Show)
 
-data AttributeOperator = Equal | Includes | PrefixMatch | SuffixMatch | SubstringMatch | DashMatch deriving (Eq, Show)
+data AttributeOperator = Equal | Includes | PrefixMatch | SuffixMatch | SubstringMatch | DashMatch | Nop deriving (Eq, Show)
 
 --selector = simpleSelector `sepBy1` combinator
 
@@ -53,10 +54,21 @@ idSelector = do
     i <- identifier
     return (IDSelector i)
 
--- AttributeSelector
---attributeSelector = do
---    symbol "["
---    i <- lexeme identifier
-    
---    char ']'
+ --AttributeSelector
+attributeSelector = do
+    symbol "["
+    i <- lexeme identifier
+    (o, p) <- option (Nop, "") (do
+        operator <- lexeme attributeOperator
+        operand <- lexeme identifier <|> lexeme string'
+        return (operator, operand))
+    char ']'
+    return (AttributeSelector i o p)
 
+attributeOperator :: Parser AttributeOperator
+attributeOperator   =   (string "=" >> return Equal)
+                    <|> (string "~=" >> return Includes)
+                    <|> (string "^=" >> return PrefixMatch)
+                    <|> (string "$=" >> return SuffixMatch)
+                    <|> (string "*=" >> return SubstringMatch)
+                    <|> (string "|=" >> return DashMatch)
