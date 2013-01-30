@@ -2,7 +2,8 @@
 
 module Tokenization (
     identifier,
-    string'
+    string',
+    function
 
     ) where
 
@@ -10,6 +11,14 @@ import Control.Applicative ((<$>))
 import Data.Char (ord)
 import Data.List (intercalate)
 import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.Parsec.Language (emptyDef)
+import qualified Text.ParserCombinators.Parsec.Token as TP
+
+-- lexer
+lexer :: TP.TokenParser ()
+lexer  = TP.makeTokenParser emptyDef
+
+parens          = TP.parens lexer
 
 
 run p less = case (parse p "" less) of
@@ -142,4 +151,9 @@ dimension = do
     n <- num
     i <- identifier
     return (n, identifier)
+
+function p = do
+    func <- identifier
+    s <- parens p
+    return (func, s)
 

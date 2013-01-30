@@ -1,6 +1,6 @@
 -- Reference: Selectors Level 3 http://www.w3.org/TR/css3-selectors/
 
-module Selector where
+module Selector (selectorParser) where
 
 import Control.Applicative ((<$>))
 import Data.List (intercalate)
@@ -9,38 +9,65 @@ import Parser
 import Tokenization
 
 
-data Selector   = SelectorSequence
-                | SelectorSequence `Descendent` Selector
-                | SelectorSequence `Child` Selector
-                | SelectorSequence `Sibling` Selector 
+data Selector   = Sequence [SimpleSelector]
+                | [SimpleSelector] `Descendent` Selector
+                | [SimpleSelector] `Child` Selector
+                | [SimpleSelector] `AdjacentSibling` Selector 
+                | [SimpleSelector] `Sibling` Selector 
                 deriving (Eq, Show)
 
-data SelectorSequence   = TypeSelector String [OtherSelector]
-                        | UniversalSelector [OtherSelector]
-                        deriving (Eq, Show)
-
-data OtherSelector  = IDSelector String
+data SimpleSelector = TypeSelector String 
+                    | UniversalSelector
+                    | IDSelector String
                     | ClassSelector String 
                     | AttributeSelector String AttributeOperator String
-                    | PsuedoSelector String
-                    | NegationSelector String
+                    | PsuedoClassSelector String PsuedoClassSelectorExpression
+                    | NegationSelector SimpleSelector
                     deriving (Eq, Show)
 
 data AttributeOperator = Equal | Includes | PrefixMatch | SuffixMatch | SubstringMatch | DashMatch | Nop deriving (Eq, Show)
 
---selector = simpleSelector `sepBy1` combinator
+data PsuedoClassSelectorExpression  = PsuedoClassSelectorExpressionIdentifier String
+                                    | PsuedoClassSelectorExpressionOdd
+                                    | PsuedoClassSelectorExpressionEven
+                                    | PsuedoClassSelectorExpressionValue Integer Integer
+                                    | PsuedoClassSelectorExpressionNothing
+                                    deriving (Eq, Show)
+selectorParser = 
+    try (do 
+        sequence <- lexeme selectorSequence
+        c <- combinator
+        restSequences <- selector
+        case c of
+            '+' -> return (sequence `AdjacentSibling` restSequences)
+            '~' -> return (sequence `Sibling` restSequences)
+            '>' -> return (sequence `Child` restSequences)
+    ) <|> try (do
+        sequence <- lexeme selectorSequence
+        restSequences <- selector
+        return (sequence `Descendent` restSequences)
+    ) <|> (do
+        sequence <- lexeme selectorSequence
+        return (Sequence sequence)
+    )
 
-
-typeSelector = identifier
-universalSelector = symbol "*"
-
---selectors = selector `sepBy1` comma
-
---selector = selectorSequence `sepBy1` combinator
-
-
+selectorSequence = do
+        h <- typeSelector <|> universalSelector
+        hs <- many (idSelector <|> classSelector <|> attributeSelector <|> try negationSelector <|> psuedoClassSelector)
+        return (h:hs)
+    <|> do
+        hs <- many1 (idSelector <|> classSelector <|> attributeSelector <|> try negationSelector <|> psuedoClassSelector)
+        return (UniversalSelector:hs)
 
 combinator = lexeme $ oneOf "+>~ "
+
+--
+--  Simple Selectors                  
+--
+
+typeSelector = identifier >>= return . TypeSelector
+
+universalSelector = symbol "*" >> return UniversalSelector
 
 -- ClassSelector
 classSelector = do
@@ -54,7 +81,7 @@ idSelector = do
     i <- identifier
     return (IDSelector i)
 
- --AttributeSelector
+-- AttributeSelector
 attributeSelector = do
     symbol "["
     i <- lexeme identifier
@@ -66,9 +93,65 @@ attributeSelector = do
     return (AttributeSelector i o p)
 
 attributeOperator :: Parser AttributeOperator
-attributeOperator   =   (string "=" >> return Equal)
+attributeOperator    =  (string "=" >> return Equal)
                     <|> (string "~=" >> return Includes)
                     <|> (string "^=" >> return PrefixMatch)
                     <|> (string "$=" >> return SuffixMatch)
                     <|> (string "*=" >> return SubstringMatch)
                     <|> (string "|=" >> return DashMatch)
+
+-- PsuedoClassSelector
+psuedoClassSelector :: Parser SimpleSelector
+psuedoClassSelector = do
+    try (string "::") <|> string ":"
+    try (do 
+            (i, s) <- function psuedoClassSelectorExpression
+            return (PsuedoClassSelector i s)
+        ) <|> (do
+            i <- identifier
+            return (PsuedoClassSelector i PsuedoClassSelectorExpressionNothing)
+        )
+
+psuedoClassSelectorExpression :: Parser PsuedoClassSelectorExpression
+psuedoClassSelectorExpression    =  psuedoClassSelectorExpressionValue 
+                                <|> psuedoClassSelectorExpressionEven
+                                <|> psuedoClassSelectorExpressionOdd
+                                <|> psuedoClassSelectorExpressionIdentifier 
+
+psuedoClassSelectorExpressionValue = 
+    try (do
+        d <- option 1 sign
+        r <- option 0 integer
+        symbol "n"
+        (d', r') <- option (1, 0) (do
+            e <- lexeme sign
+            s <- integer
+            return (e, s))
+        return (PsuedoClassSelectorExpressionValue (d * r) (d' * r'))
+    ) <|> (do
+        d <- option 1 sign
+        r <- integer
+        return (PsuedoClassSelectorExpressionValue (d * r) 0)
+    )
+    where   
+        sign = (string "+" >> return 1) <|> (string "-" >> return (-1))
+
+psuedoClassSelectorExpressionIdentifier = do
+    i <- lexeme identifier
+    return (PsuedoClassSelectorExpressionIdentifier i)
+psuedoClassSelectorExpressionEven = symbol "even" >> return PsuedoClassSelectorExpressionEven
+psuedoClassSelectorExpressionOdd = symbol "odd" >> return PsuedoClassSelectorExpressionOdd
+
+-- NegationSelector
+negationSelector = do
+    string ":not"
+    s <- parens (lexeme negationArgument)
+    return (NegationSelector s)
+
+negationArgument :: Parser SimpleSelector
+negationArgument =  typeSelector 
+                <|> universalSelector 
+                <|> idSelector
+                <|> classSelector 
+                <|> psuedoClassSelector 
+                <|> attributeSelector
