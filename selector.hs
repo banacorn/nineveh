@@ -120,29 +120,29 @@ psuedoClassSelectorExpression    =  psuedoClassSelectorExpressionValue
                                 <|> psuedoClassSelectorExpressionOdd
                                 <|> psuedoClassSelectorExpressionIdentifier 
 
-psuedoClassSelectorExpressionValue = 
-    try (do
-        d <- option 1 sign
-        r <- option 0 integer
-        symbol "n"
-        (d', r') <- option (1, 0) (do
-            e <- lexeme sign
-            s <- integer
-            return (e, s))
-        return (PsuedoClassSelectorExpressionValue (d * r) (d' * r'))
-    ) <|> (do
-        d <- option 1 sign
-        r <- integer
-        return (PsuedoClassSelectorExpressionValue (d * r) 0)
-    )
-    where   
+psuedoClassSelectorExpressionValue = try linear <|> constant 
+    where
+        -- an + b
+        linear = do
+            d <- option 1 sign
+            r <- option 0 integer
+            symbol "n"
+            (d', r') <- option (1, 0) (do
+                e <- lexeme sign
+                s <- integer
+                return (e, s))
+            return (PsuedoClassSelectorExpressionValue (d * r) (d' * r'))
+        -- b
+        constant = do
+            d <- option 1 sign
+            r <- integer
+            return (PsuedoClassSelectorExpressionValue 0 (d * r))
+
         sign = (string "+" >> return 1) <|> (string "-" >> return (-1))
 
-psuedoClassSelectorExpressionIdentifier = do
-    i <- lexeme identifier
-    return (PsuedoClassSelectorExpressionIdentifier i)
-psuedoClassSelectorExpressionEven = symbol "even" >> return PsuedoClassSelectorExpressionEven
-psuedoClassSelectorExpressionOdd = symbol "odd" >> return PsuedoClassSelectorExpressionOdd
+psuedoClassSelectorExpressionIdentifier = lexeme identifier >>= return . PsuedoClassSelectorExpressionIdentifier
+psuedoClassSelectorExpressionEven       = symbol "even"     >>  return   PsuedoClassSelectorExpressionEven
+psuedoClassSelectorExpressionOdd        = symbol "odd"      >>  return   PsuedoClassSelectorExpressionOdd
 
 -- NegationSelector
 negationSelector = do
