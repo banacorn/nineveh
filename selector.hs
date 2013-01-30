@@ -6,7 +6,7 @@ import Control.Applicative ((<$>))
 import Data.List (intercalate)
 import Text.ParserCombinators.Parsec
 import Parser
-import Tokenization
+import Tokenize
 
 
 data Selector   = Sequence [SimpleSelector]

@@ -1,6 +1,6 @@
 -- Reference: Tokenization http://www.w3.org/TR/css3-syntax/#tokenization
 
-module Tokenization (
+module Tokenize (
     identifier,
     string',
     function
