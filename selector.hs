@@ -8,7 +8,7 @@ import Text.ParserCombinators.Parsec
 import Parser
 import Tokenize
 
-
+-- a selector is a series of simple selector sequences seperated by combinators
 data Selector   = Sequence [SimpleSelector]
                 | [SimpleSelector] `Descendent` Selector
                 | [SimpleSelector] `Child` Selector
@@ -25,33 +25,35 @@ data SimpleSelector = TypeSelector String
                     | NegationSelector SimpleSelector
                     deriving (Eq, Show)
 
+-- some ugly shit for the [a~=b] stuff
 data AttributeOperator = Equal | Includes | PrefixMatch | SuffixMatch | SubstringMatch | DashMatch | Nop deriving (Eq, Show)
 
+-- fuck this is ugly
 data PsuedoClassSelectorExpression  = PsuedoClassSelectorExpressionIdentifier String
                                     | PsuedoClassSelectorExpressionOdd
                                     | PsuedoClassSelectorExpressionEven
                                     | PsuedoClassSelectorExpressionValue Integer Integer
                                     | PsuedoClassSelectorExpressionNothing
                                     deriving (Eq, Show)
-selectorParser = 
-    try (do 
-        sequence <- lexeme selectorSequence
-        c <- combinator
-        restSequences <- selector
-        case c of
-            '+' -> return (sequence `AdjacentSibling` restSequences)
-            '~' -> return (sequence `Sibling` restSequences)
-            '>' -> return (sequence `Child` restSequences)
-    ) <|> try (do
-        sequence <- lexeme selectorSequence
-        restSequences <- selector
-        return (sequence `Descendent` restSequences)
-    ) <|> (do
-        sequence <- lexeme selectorSequence
-        return (Sequence sequence)
-    )
 
-selectorSequence = do
+
+selectorParser = try descendentCase <|> try otherCases <|> lastSequence
+    where   descendentCase = do
+                sequence <- lexeme selectorSequence
+                restSequences <- selectorParser
+                return (sequence `Descendent` restSequences)
+            otherCases = do 
+                sequence <- lexeme selectorSequence
+                c <- combinator
+                restSequences <- selectorParser
+                case c of
+                    '+' -> return (sequence `AdjacentSibling` restSequences)
+                    '~' -> return (sequence `Sibling` restSequences)
+                    '>' -> return (sequence `Child` restSequences)
+            lastSequence = lexeme selectorSequence >>= return . Sequence    
+
+selectorSequence = 
+    do
         h <- typeSelector <|> universalSelector
         hs <- many (idSelector <|> classSelector <|> attributeSelector <|> try negationSelector <|> psuedoClassSelector)
         return (h:hs)
