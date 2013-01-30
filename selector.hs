@@ -72,16 +72,10 @@ typeSelector = identifier >>= return . TypeSelector
 universalSelector = symbol "*" >> return UniversalSelector
 
 -- ClassSelector
-classSelector = do
-    char '.'
-    i <- identifier
-    return (ClassSelector i)
+classSelector = char '.' >> identifier >>= return . ClassSelector
 
 -- IDSelector
-idSelector = do
-    char '#'
-    i <- identifier
-    return (IDSelector i)
+idSelector = char '#' >> identifier >>= return . IDSelector
 
 -- AttributeSelector
 attributeSelector = do
