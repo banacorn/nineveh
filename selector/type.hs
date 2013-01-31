@@ -6,7 +6,7 @@ data Selector   = Sequence [SimpleSelector]
                 | [SimpleSelector] `Child` Selector
                 | [SimpleSelector] `AdjacentSibling` Selector 
                 | [SimpleSelector] `Sibling` Selector 
-                deriving (Eq, Show)
+                deriving (Eq)
 
 data SimpleSelector = TypeSelector String 
                     | UniversalSelector

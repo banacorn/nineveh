@@ -9,6 +9,7 @@ import Parser
 import Tokenize
 
 import Selector.Type
+import Selector.Instance
 
 parseSelector = try descendentCase <|> try otherCases <|> lastSequence
     where   descendentCase = do
