@@ -1,6 +1,6 @@
 -- Reference: Selectors Level 3 http://www.w3.org/TR/css3-selectors/
 
-module Selector (selectorParser) where
+module Selector (parseSelector) where
 
 import Control.Applicative ((<$>))
 import Data.List (intercalate)
@@ -37,15 +37,15 @@ data PsuedoClassSelectorExpression  = PsuedoClassSelectorExpressionIdentifier St
                                     deriving (Eq, Show)
 
 
-selectorParser = try descendentCase <|> try otherCases <|> lastSequence
+parseSelector = try descendentCase <|> try otherCases <|> lastSequence
     where   descendentCase = do
                 sequence <- lexeme selectorSequence
-                restSequences <- selectorParser
+                restSequences <- parseSelector
                 return (sequence `Descendent` restSequences)
             otherCases = do 
                 sequence <- lexeme selectorSequence
                 c <- combinator
-                restSequences <- selectorParser
+                restSequences <- parseSelector
                 case c of
                     '+' -> return (sequence `AdjacentSibling` restSequences)
                     '~' -> return (sequence `Sibling` restSequences)
@@ -122,7 +122,7 @@ psuedoClassSelectorExpressionValue = try linear <|> constant
             r <- option 0 integer
             symbol "n"
             (d', r') <- option (1, 0) (do
-                e <- lexeme sign
+                e <- lexeme sign    
                 s <- integer
                 return (e, s))
             return (PsuedoClassSelectorExpressionValue (d * r) (d' * r'))
@@ -141,8 +141,7 @@ psuedoClassSelectorExpressionOdd        = symbol "odd"      >>  return   PsuedoC
 -- NegationSelector
 negationSelector = do
     string ":not"
-    s <- parens (lexeme negationArgument)
-    return (NegationSelector s)
+    parens (lexeme negationArgument) >>= return . NegationSelector
 
 negationArgument :: Parser SimpleSelector
 negationArgument =  typeSelector 
