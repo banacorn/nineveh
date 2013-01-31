@@ -15,10 +15,10 @@ data SimpleSelector = TypeSelector String
                     | AttributeSelector String AttributeOperator String
                     | PsuedoClassSelector String PsuedoClassSelectorExpression
                     | NegationSelector SimpleSelector
-                    deriving (Eq, Show)
+                    deriving (Eq)
 
 -- some ugly shit for the [a~=b] stuff
-data AttributeOperator = Equal | Includes | PrefixMatch | SuffixMatch | SubstringMatch | DashMatch | Nop deriving (Eq, Show)
+data AttributeOperator = Equal | Includes | PrefixMatch | SuffixMatch | SubstringMatch | DashMatch | Nop deriving (Eq)
 
 -- fuck this is ugly
 data PsuedoClassSelectorExpression  = PsuedoClassSelectorExpressionIdentifier String
