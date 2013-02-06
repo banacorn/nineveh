@@ -11,7 +11,7 @@ import Tokenize
 import Text.ParserCombinators.Parsec
 
 
-parsePercentage = lexeme $ do
+parsePercentage = do
     Number n <- parseNumber
     char '%'
     return (Percentage n)

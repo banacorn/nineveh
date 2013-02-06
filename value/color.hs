@@ -15,7 +15,7 @@ import Value.Number
 import Value.Percentage
 
 parseColor :: Parser Value
-parseColor = lexeme $
+parseColor = 
         try transparent
     <|> try currentColor
     <|> try rgb
@@ -28,9 +28,7 @@ parseColor = lexeme $
 
 transparent = symbol "transparent" >> return Transparent
 currentColor = symbol "currentColor" >> return CurrentColor
-colorKeyword = do
-    i <- identifier 
-    return (ColorKeyword i)
+colorKeyword = identifier >>= return . ColorKeyword
 
 hex = 
     try (do

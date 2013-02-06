@@ -15,7 +15,7 @@ unit =  try (string "dpi" >> return Dpi)
     <|> try (string "dpcm" >> return Dpcm)
     <|> (string "dppx" >> return Dppx)
 
-parseResolution = lexeme $ do
+parseResolution = do
     Number n <- parseNumber
     ctor <- unit
     return (ctor n)

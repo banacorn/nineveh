@@ -10,13 +10,4 @@ import Text.ParserCombinators.Parsec
 import Value.Type
 import Value.String
 
-literal = do
-        String' s <- parseString
-        return s
-    <|> many (noneOf ")")
-        
-
-parseUrl = lexeme $ do
-    string "url"
-    s <- parens literal
-    return (Url s)
+parseUrl = url >>= return . Url

@@ -49,4 +49,4 @@ parseRuleset = do
     symbol "}"
     return (Ruleset selectors declarations)
 
---parseAtRule = 
+--parseBlock = between (symbol "{") (symbol "}") (many (noneOf "}"))

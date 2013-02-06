@@ -16,7 +16,7 @@ unit =  (string "deg" >> return Deg)
     <|> (string "rad" >> return Rad)
     <|> (string "turn" >> return Turn)
 
-parseAngle = lexeme $ do
+parseAngle = do
     Number n <- parseNumber
     ctor <- unit
     return (ctor n)

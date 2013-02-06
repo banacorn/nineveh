@@ -15,7 +15,7 @@ import Value.Number
 unit =  (string "Hz" >> return Hz)
     <|> (string "KHz" >> return KHz)
 
-parseFrequency = lexeme $ do
+parseFrequency = do
     Number n <- parseNumber
     ctor <- unit
     return (ctor n)

@@ -10,7 +10,7 @@ import Text.ParserCombinators.Parsec
 import Value.Type
 import Value.Number
 
-parseRatio = lexeme $ do
+parseRatio = do
     n <- natural
     char '/'
     d <- natural

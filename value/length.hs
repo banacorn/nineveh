@@ -26,7 +26,7 @@ unit =  try (string "em" >> return Em)
     <|> try (string "pt" >> return Pt)
     <|>     (string "pc" >> return Pc)
 
-parseLength = lexeme $ do
+parseLength = do
     Number n <- parseNumber
     ctor <- unit
     return (ctor n)

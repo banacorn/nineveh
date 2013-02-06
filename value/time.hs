@@ -13,7 +13,7 @@ import Value.Number
 unit =  (string "s" >> return S)
     <|> (string "ms" >> return Ms)
 
-parseTime = lexeme $ do
+parseTime = do
     Number n <- parseNumber
     ctor <- unit
     return (ctor n)

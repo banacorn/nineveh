@@ -16,12 +16,12 @@ import Value.Number
 direction   =   (symbol "start" >> return Start) 
             <|> (symbol "end" >> return End)
 
-cubicBezier = lexeme $ do
+cubicBezier = do
     string "cubic-bezier"
     [Number x1, Number y1, Number x2, Number y2] <- parens (parseNumber `sepBy` symbol ",")
     return (CubicBezier (x1, y1, x2, y2))
 
-steps = lexeme $ do
+steps = do
     string "steps("
     Integer' n <- parseInteger
     symbol ","

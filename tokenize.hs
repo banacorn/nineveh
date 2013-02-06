@@ -2,9 +2,13 @@
 
 module Tokenize (
     identifier,
-    string',
-    function,
     atKeyword,
+    string',
+    hash,
+    number,
+    percentage,
+    function,
+    url,
 
     lexeme,
     natural,
@@ -115,7 +119,7 @@ urlchar = return <$> nonascii <|> escape <|> return <$> satisfy (\ c -> let n = 
                 n >= 0x09 && n <= 0x21
             ||  n >= 0x23 && n <= 0x7E
 
-            &&  n /= 0x27 && n /= 0x22   -- ' and "
+            &&  n /= 0x27 && n /= 0x22 && n /= 0x29   -- ' and " and )
         )
 
 stringchar :: Parser String
@@ -149,18 +153,15 @@ string' = do
             char '"'
             str <- concat <$> many (stringchar <|> string "'")
             char '"'
-            return ("\"" ++ str ++ "\"")
+            return str
         <|> do 
             char '\''
             str <- concat <$> many (stringchar <|> string "\"")
             char '\''
-            return ("'" ++ str ++ "'")
+            return str
 
 hash :: Parser String
-hash = do
-    char '#'
-    n <- name
-    return ('#':n)
+hash = char '#' >> identifier
 
 number :: Parser String
 number = num
@@ -169,7 +170,7 @@ percentage :: Parser String
 percentage = do
     n <- num
     char '%'
-    return (n ++ "%")
+    return n
 
 --dimension :: Parser (String, String)
 dimension = do
@@ -182,3 +183,6 @@ function p = do
     s <- parens p
     return (func, s)
 
+url = do
+    string "url"
+    parens (try string' <|> concat <$> many urlchar)

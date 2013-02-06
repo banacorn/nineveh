@@ -10,7 +10,7 @@ import Text.ParserCombinators.Parsec
 import Value.Type
 import Value.Length
 
-parseShape = lexeme $ do
+parseShape = do
     string "rect"
     [top, right, bottom, left] <- parens (parseLength `sepBy` symbol ",")
     return (Shape (top, right, bottom, left))
