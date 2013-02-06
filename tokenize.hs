@@ -142,7 +142,7 @@ identifier = do
         return (hyphen ++ start ++ concat rest)
 
 atKeyword :: Parser String
-atKeyword = char '@' >> identifier >>= return
+atKeyword = char '@' >> identifier
 
 string' :: Parser String
 string' = do
