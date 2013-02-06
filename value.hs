@@ -1,10 +1,10 @@
-module Value.Value (
+module Value (
         Value(..), 
         parseValue
     ) where
 
 import Text.ParserCombinators.Parsec
-import Parser
+import Tokenize
 
 import Value.Type
 import Value.Instance
@@ -23,11 +23,11 @@ import Value.String
 import Value.Url
 import Value.Time
 import Value.TimingFunction
-import Value.Variable
+--import Value.Variable
 
 parseValue  =       
-                    parseVariable
-            <|> try parseShape
+                    --parseVariable
+                try parseShape
             <|> try parseUrl
             <|> try parseTimingFunction
             <|>     parseString

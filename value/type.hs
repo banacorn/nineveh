@@ -84,5 +84,6 @@ data Value  =
 
             -- None
             | None
+            deriving (Eq)
 
 data TimingFunctionDirection = Start | End deriving (Eq)

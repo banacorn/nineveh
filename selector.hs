@@ -1,11 +1,10 @@
 -- Reference: Selectors Level 3 http://www.w3.org/TR/css3-selectors/
 
-module Selector (parseSelector) where
+module Selector (parseSelector, Selector(..)) where
 
 import Control.Applicative ((<$>))
 import Data.List (intercalate)
 import Text.ParserCombinators.Parsec
-import Parser
 import Tokenize
 
 import Selector.Type

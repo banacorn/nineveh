@@ -4,7 +4,6 @@ import Control.Applicative ((<$>))
 import Data.List
 
 import Text.ParserCombinators.Parsec
-import Parser
 import Value.Value
 import Value.Variable
 

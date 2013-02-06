@@ -7,7 +7,7 @@ module Value.Percentage (
 import Value.Type
 import Value.Number
 
-import Parser
+import Tokenize
 import Text.ParserCombinators.Parsec
 
 

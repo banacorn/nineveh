@@ -8,7 +8,7 @@ module Value.Angle (
 import Value.Type
 import Value.Number
 
-import Parser
+import Tokenize
 import Text.ParserCombinators.Parsec
 
 unit =  (string "deg" >> return Deg)

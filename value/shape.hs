@@ -4,7 +4,7 @@ module Value.Shape (
     parseShape
     ) where
 
-import Parser
+import Tokenize
 import Text.ParserCombinators.Parsec
 
 import Value.Type

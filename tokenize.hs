@@ -3,7 +3,22 @@
 module Tokenize (
     identifier,
     string',
-    function
+    function,
+    atKeyword,
+
+    lexeme,
+    natural,
+    integer,
+    float,
+    naturalOrFloat,
+    stringLiteral,
+    parens,
+    commaSep1,
+    comma,
+    semi,
+    symbol,
+
+    run
 
     ) where
 
@@ -18,7 +33,20 @@ import qualified Text.ParserCombinators.Parsec.Token as TP
 lexer :: TP.TokenParser ()
 lexer  = TP.makeTokenParser emptyDef
 
+-- binded with the lexer
+lexeme          = TP.lexeme lexer
+integer         = TP.integer lexer
+float           = TP.float lexer
+naturalOrFloat  = TP.naturalOrFloat lexer
+stringLiteral   = TP.stringLiteral lexer
 parens          = TP.parens lexer
+commaSep1       = TP.commaSep1 lexer
+comma           = TP.comma lexer
+--alphaNum        = TP.alphaNum lexer
+semi            = TP.semi lexer
+--identifier      = TP.identifier lexer
+natural         = TP.natural lexer
+symbol          = TP.symbol lexer
 
 
 run p less = case (parse p "" less) of
@@ -114,10 +142,7 @@ identifier = do
         return (hyphen ++ start ++ concat rest)
 
 atKeyword :: Parser String
-atKeyword = do
-    char '@'
-    i <- identifier
-    return ('@':i)
+atKeyword = char '@' >> identifier >>= return
 
 string' :: Parser String
 string' = do

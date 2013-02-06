@@ -4,8 +4,8 @@ module Value.Color (
     parseColor
     ) where
 
-import Parser
 import Text.ParserCombinators.Parsec
+import Tokenize
 
 --import Control.Applicative ((<$>), (<*>), (<**>))
 import Value.Type
