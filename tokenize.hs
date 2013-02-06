@@ -9,6 +9,7 @@ module Tokenize (
     percentage,
     function,
     url,
+    unicodeRange,
 
     lexeme,
     natural,
@@ -172,7 +173,6 @@ percentage = do
     char '%'
     return n
 
---dimension :: Parser (String, String)
 dimension = do
     n <- num
     i <- identifier
@@ -186,3 +186,19 @@ function p = do
 url = do
     string "url"
     parens (try string' <|> concat <$> many urlchar)
+
+unicodeRange :: Parser String
+unicodeRange = do
+    string "U+"
+    a <- option "" (many1 hexDigit)
+    b <- option "" (char '-' >> many1 hexDigit)
+    return ("U+" ++ a ++ b)
+
+cdo :: Parser String
+cdo = string "<!--"
+
+cdc :: Parser String
+cdc = string "-->"
+
+bom :: Parser Char
+bom = char '\xFEFF'
