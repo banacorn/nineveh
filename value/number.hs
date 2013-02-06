@@ -10,14 +10,9 @@ import Text.ParserCombinators.Parsec
 import Value.Type
 
 
-parseNumber = lexeme $ try (do 
-        f <- float
-        return (Number f))
-    <|> do 
-        i <- integer
-        return (Number $ fromIntegral i) 
-    <|> do 
-        char '.'
-        i <- integer
-        return (Number $ pointN i)
-        where   pointN n = ((fromIntegral n) *) . (1 /) . (10 ^) . succ . floor . logBase 10 $ (fromIntegral n)
+parseNumber :: Parser Value
+parseNumber = do
+    n <- number
+    case head n of
+        '.' -> return . Number . read $ '0':n
+        _   -> return . Number . read $ n
