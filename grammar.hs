@@ -17,11 +17,15 @@ data Declaration = Declaration String Value
 
 data Ruleset = Ruleset [Selector] [Declaration] deriving (Eq)
 
+data Stylesheet = Stylesheet [Ruleset] deriving (Eq)
+
 instance Show Declaration where
     show (Declaration property value) = property ++ ": " ++ show value
     show (NothingDeclared) = ""
 
 instance Show Ruleset where
+    show (Ruleset selectors []) = intercalate ", " (fmap show selectors) ++ " {}"
+    show (Ruleset selectors [NothingDeclared]) = intercalate ", " (fmap show selectors) ++ " {}"
     show (Ruleset selectors declarations) = 
         intercalate ", " (fmap show selectors) ++
         " {" ++
@@ -31,6 +35,14 @@ instance Show Ruleset where
                 showDeclarations (NothingDeclared:xs) = showDeclarations xs
                 showDeclarations (x:xs) = "\n   " ++ show x ++ ";" ++ showDeclarations xs
 
+instance Show Stylesheet where
+    show (Stylesheet rulesets) = intercalate "\n\n" (fmap show rulesets)
+
+test = do
+    c <- readFile "test/less.less"
+    run parseStylesheet c
+
+
 parseProperty = lexeme identifier
 
 
@@ -38,7 +50,7 @@ parseProperty = lexeme identifier
 parseDeclaration = (do
         property <- parseProperty
         symbol ":"
-        value <- parseValue
+        value <- lexeme parseValue
         return (Declaration property value)
     ) <|> (spaces >> return NothingDeclared)
 
@@ -48,5 +60,7 @@ parseRuleset = do
     declarations <- parseDeclaration `sepBy` symbol ";"
     symbol "}"
     return (Ruleset selectors declarations)
+
+parseStylesheet = many (lexeme parseRuleset) >>= return . Stylesheet
 
 --parseBlock = between (symbol "{") (symbol "}") (many (noneOf "}"))

@@ -42,11 +42,11 @@ hex =
 
 rgb =
     try (do
-        string "rgb"
+        reserved "rgb"
         [r, g, b] <- parens (commaSep1 parsePercentage)
         return $ RGB (r, g, b)
     ) <|> (do
-        string "rgb"
+        reserved "rgb"
         [r, g, b] <- parens (commaSep1 parseInteger)
         return $ RGB (r, g, b)
     )

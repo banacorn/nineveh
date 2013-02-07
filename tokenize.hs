@@ -22,21 +22,38 @@ module Tokenize (
     comma,
     semi,
     symbol,
-
+    reserved,
+    
     run
 
     ) where
 
 import Control.Applicative ((<$>))
 import Data.Char (ord)
-import Data.List (intercalate)
+import Data.List (intercalate, (!!))
 import Text.ParserCombinators.Parsec
-import Text.ParserCombinators.Parsec.Language (emptyDef)
+--import Text.ParserCombinators.Parsec.Language (emptyDef)
 import qualified Text.ParserCombinators.Parsec.Token as TP
 
 -- lexer
+languageDef = TP.LanguageDef {
+    TP.commentStart    = "/*",
+    TP.commentEnd      = "*/",
+    TP.commentLine     = "//",
+    TP.nestedComments  = True,
+    -- fuck it we're not using it anyway
+    TP.identStart      = anyChar,
+    TP.identLetter     = anyChar,
+    TP.opStart         = anyChar,
+    TP.opLetter        = anyChar,
+    TP.reservedNames   = [],
+    TP.reservedOpNames = [],
+    --TP.identStart      = (char '-' <|> fmap (!! 0) nmstart),
+    TP.caseSensitive   = False
+}
+
 lexer :: TP.TokenParser ()
-lexer  = TP.makeTokenParser emptyDef
+lexer  = TP.makeTokenParser languageDef
 
 -- binded with the lexer
 lexeme          = TP.lexeme lexer
@@ -52,7 +69,7 @@ semi            = TP.semi lexer
 --identifier      = TP.identifier lexer
 natural         = TP.natural lexer
 symbol          = TP.symbol lexer
-
+reserved        = TP.reserved lexer
 
 run p less = case (parse p "" less) of
     Left err -> do
