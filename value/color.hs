@@ -40,16 +40,16 @@ hex =
         h <- count 3 hexDigit
         return $ Hex ('#':h))
 
-rgb =
-    try (do
-        reserved "rgb"
-        [r, g, b] <- parens (commaSep1 parsePercentage)
-        return $ RGB (r, g, b)
-    ) <|> (do
-        reserved "rgb"
-        [r, g, b] <- parens (commaSep1 parseInteger)
-        return $ RGB (r, g, b)
-    )
+rgb = do
+    string "rgb"
+    [r, g, b] <- parens (commaSep1 (try parsePercentage <|> parseInteger))
+    return $ RGB (r, g, b)
+    --try (do
+    --) <|> (do
+    --    string "rgb"
+    --    [r, g, b] <- parens (commaSep1 parseInteger)
+    --    return $ RGB (r, g, b)
+    --)
 
 rgba =
     try (do

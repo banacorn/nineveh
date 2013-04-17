@@ -3,6 +3,7 @@
 module Grammar where
 
 import Data.List
+import Data.Char (toLower)
 import Text.ParserCombinators.Parsec
 
 import Tokenize
